@@ -70,10 +70,10 @@ async function ArticleLists() {
 
                 {/* 右側 （サムネ）*/}
                 <div className="w-full md:w-2/5 lg:w-1/5 pointer-events-none aspect-[16/9] md:aspect-[3/2] shrink-0">
-                  <div className="relative w-full h-full">
+                  <div className="relative w-full h-full overflow-hidden bg-white">
                     {article.thumbnail ? (
                       <Image
-                        className="object-cover object-center"
+                        className="object-contain object-center p-2"
                         src={article.thumbnail}
                         alt="サムネイル画像"
                         fill={true}
