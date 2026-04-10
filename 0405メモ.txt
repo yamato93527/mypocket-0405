@@ -1,0 +1,8 @@
+●supabase データベースのパスワード
+
+o5px6nOKjBKijNzb
+
+
+●コネクション
+
+postgresql://postgres:[YOUR-PASSWORD]@db.iczgeqphftgwxouumaum.supabase.co:5432/postgres
