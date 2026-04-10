@@ -1,8 +1,12 @@
 import { getArticles } from "../actions/articles/get-articles";
 import ArticleCard from "./ArticleCard";
 
-async function ArticleLists() {
-  const articlesData = await getArticles();
+type ArticleListsProps = {
+  filter: "all" | "favorites" | "archived";
+};
+
+async function ArticleLists({ filter }: ArticleListsProps) {
+  const articlesData = await getArticles(filter);
 
   if (!articlesData.length) {
     return (

@@ -22,7 +22,7 @@ function Sidebar({ isSidebarOpen}: SidebarProps) {
           <ul className="flex flex-col gap-6 pl-4">
             <li>
               <Link
-                href="#"
+                href="/"
                 className="flex items-center gap-3 text-xl"
               >
                 すべて
@@ -30,7 +30,7 @@ function Sidebar({ isSidebarOpen}: SidebarProps) {
             </li>
             <li>
               <Link
-                href="#"
+                href="/"
                 className="flex items-center gap-3 text-xl"
               >
                 ホーム
@@ -38,7 +38,7 @@ function Sidebar({ isSidebarOpen}: SidebarProps) {
             </li>
             <li>
               <Link
-                href="#"
+                href="/?filter=favorites"
                 className="flex items-center gap-3 text-xl"
               >
                 お気に入り
@@ -46,7 +46,7 @@ function Sidebar({ isSidebarOpen}: SidebarProps) {
             </li>
             <li>
               <Link
-                href="#"
+                href="/?filter=archived"
                 className="flex items-center gap-3 text-xl"
               >
                 アーカイブ

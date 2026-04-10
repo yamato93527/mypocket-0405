@@ -7,13 +7,19 @@ type GetArticlesResult = Awaited<
   ReturnType<(typeof prisma.article)["findMany"]>
 >;
 
-export async function getArticles(): Promise<GetArticlesResult> {
+type ArticleFilter = "all" | "favorites" | "archived";
+
+export async function getArticles(
+  filter: ArticleFilter = "all"
+): Promise<GetArticlesResult> {
   try {
     const userId = getCurrentUserId();
 
     const articles = await prisma.article.findMany({
       where: {
         userId,
+        ...(filter === "favorites" ? { isLiked: true } : {}),
+        ...(filter === "archived" ? { isArchived: true } : {}),
       },
       orderBy: {
         createdAt: "desc",
