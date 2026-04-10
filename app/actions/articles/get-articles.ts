@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { getCurrentUserId } from "./get-current-user-id";
 
 type GetArticlesResult = Awaited<
   ReturnType<(typeof prisma.article)["findMany"]>
@@ -8,7 +9,7 @@ type GetArticlesResult = Awaited<
 
 export async function getArticles(): Promise<GetArticlesResult> {
   try {
-    const userId = "temp-user-123";
+    const userId = getCurrentUserId();
 
     const articles = await prisma.article.findMany({
       where: {

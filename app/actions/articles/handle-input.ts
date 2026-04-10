@@ -2,6 +2,7 @@
 
 import type { ArticleInputState } from "./article-input-state";
 import { extractUrlData } from "./extract-url-data";
+import { getCurrentUserId } from "./get-current-user-id";
 import { saveArticle } from "./save-article";
 
 export async function handleArticleInput(
@@ -22,8 +23,7 @@ export async function handleArticleInput(
     };
   }
 
-  // TODO: Replace with authenticated user id.
-  const userId = "temp-user-123";
+  const userId = getCurrentUserId();
 
   try {
     const result = await saveArticle(
