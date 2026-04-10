@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { checkUrlExists } from "./checkUrlExists";
+import { revalidatePath } from "next/cache";
 
 type ArticleDataProps = {
   title: string;
@@ -97,6 +98,8 @@ export async function saveArticle(
         content: articleData.content,
       },
     });
+
+    revalidatePath("/");
 
     return { success: true, article };
   } catch (err) {

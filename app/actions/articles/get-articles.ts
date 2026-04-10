@@ -1,0 +1,29 @@
+"use server";
+
+import prisma from "@/lib/prisma";
+
+type GetArticlesResult = Awaited<
+  ReturnType<(typeof prisma.article)["findMany"]>
+>;
+
+export async function getArticles(): Promise<GetArticlesResult> {
+  try {
+    const userId = "temp-user-123";
+
+    const articles = await prisma.article.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return articles;
+  } catch (err) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[getArticles]", err);
+    }
+    return [];
+  }
+}
