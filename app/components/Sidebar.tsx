@@ -30,7 +30,7 @@ function Sidebar({ isSidebarOpen}: SidebarProps) {
             </li>
             <li>
               <Link
-                href="/"
+                href="/?filter=home"
                 className="flex items-center gap-3 text-xl"
               >
                 ホーム

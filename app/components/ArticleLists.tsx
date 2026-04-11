@@ -2,7 +2,7 @@ import { getArticles } from "../actions/articles/get-articles";
 import ArticleCard from "./ArticleCard";
 
 type ArticleListsProps = {
-  filter: "all" | "favorites" | "archived";
+  filter: "all" | "home" | "favorites" | "archived";
 };
 
 async function ArticleLists({ filter }: ArticleListsProps) {

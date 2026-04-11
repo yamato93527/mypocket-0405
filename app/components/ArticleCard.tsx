@@ -69,6 +69,11 @@ function ArticleCard({ article }: ArticleCardProps) {
     event.preventDefault();
     event.stopPropagation();
 
+    const confirmed = window.confirm("この記事を削除しますか？");
+    if (!confirmed) {
+      return;
+    }
+
     setIsDeleted(true);
 
     startTransition(async () => {
