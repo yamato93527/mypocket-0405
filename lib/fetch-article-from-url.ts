@@ -23,6 +23,7 @@ const REQUEST_HEADERS = {
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
   "accept-language": "ja,en-US;q=0.9,en;q=0.8",
 };
+const REQUEST_TIMEOUT_MS = 10000;
 
 async function fetchHtml(
   inputUrl: string,
@@ -71,6 +72,14 @@ async function fetchHtml(
           html += chunk;
         });
 
+        response.on("aborted", () => {
+          resolve(null);
+        });
+
+        response.on("error", () => {
+          resolve(null);
+        });
+
         response.on("end", () => {
           resolve({
             html,
@@ -80,6 +89,10 @@ async function fetchHtml(
         });
       }
     );
+
+    request.setTimeout(REQUEST_TIMEOUT_MS, () => {
+      request.destroy(new Error("Request timed out"));
+    });
 
     request.on("error", () => resolve(null));
     request.end();
