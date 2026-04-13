@@ -2,9 +2,19 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { signOut, useSession } from "next-auth/react";
 
 function UserIcon() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { data: session } = useSession();
+
+  const userName = session?.user?.name ?? "ユーザー";
+  const userEmail = session?.user?.email ?? "";
+
+  const handleLogout = async () => {
+    setIsMenuOpen(false);
+    await signOut({ callbackUrl: "/signin" });
+  };
 
   return (
     <div className="hidden lg:flex relative h-11/12 aspect-square items-center">
@@ -25,10 +35,13 @@ function UserIcon() {
       {isMenuOpen && (
         <div className="absolute right-0 top-5 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border">
           <div className="px-4 py-2 border-b">
-            <p className="text-sm font-medium text-gray-900">ゆう</p>
-            <p className="text-sm text-gray-500">sample@example.com</p>
+            <p className="text-sm font-medium text-gray-900">{userName}</p>
+            <p className="text-sm text-gray-500 truncate">{userEmail}</p>
           </div>
-          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+          <button
+            onClick={handleLogout}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
             ログアウト
           </button>
         </div>
