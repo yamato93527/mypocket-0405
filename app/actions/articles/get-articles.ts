@@ -10,10 +10,12 @@ type GetArticlesResult = Awaited<
 type ArticleFilter = "all" | "home" | "favorites" | "archived";
 
 export async function getArticles(
-  filter: ArticleFilter = "all"
+  filter: ArticleFilter = "all",
+  searchQuery = ""
 ): Promise<GetArticlesResult> {
   try {
     const userId = getCurrentUserId();
+    const normalizedQuery = searchQuery.trim();
 
     const articles = await prisma.article.findMany({
       where: {
@@ -21,6 +23,15 @@ export async function getArticles(
         ...(filter === "home" ? { isArchived: false } : {}),
         ...(filter === "favorites" ? { isLiked: true } : {}),
         ...(filter === "archived" ? { isArchived: true } : {}),
+        ...(normalizedQuery
+          ? {
+              OR: [
+                { title: { contains: normalizedQuery, mode: "insensitive" } },
+                { siteName: { contains: normalizedQuery, mode: "insensitive" } },
+                { description: { contains: normalizedQuery, mode: "insensitive" } },
+              ],
+            }
+          : {}),
       },
       orderBy: {
         createdAt: "desc",

@@ -4,6 +4,7 @@ import ArticleLists from "./components/ArticleLists";
 type HomeProps = {
   searchParams?: Promise<{
     filter?: string | string[];
+    q?: string | string[];
   }>;
 };
 
@@ -21,10 +22,14 @@ export default async function Home({ searchParams }: HomeProps) {
       : filterParam === "home"
       ? "home"
       : "all";
+  const rawQueryParam = resolvedSearchParams?.q;
+  const searchQuery = Array.isArray(rawQueryParam)
+    ? rawQueryParam[0] ?? ""
+    : rawQueryParam ?? "";
 
   return (
     <MobileLayout>
-      <ArticleLists filter={filter} />
+      <ArticleLists filter={filter} searchQuery={searchQuery} />
     </MobileLayout>
   );
 }

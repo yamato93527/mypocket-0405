@@ -3,6 +3,7 @@ import ArticleCard from "./ArticleCard";
 
 type ArticleListsProps = {
   filter: "all" | "home" | "favorites" | "archived";
+  searchQuery?: string;
 };
 
 const FILTER_TITLES: Record<ArticleListsProps["filter"], string> = {
@@ -12,9 +13,12 @@ const FILTER_TITLES: Record<ArticleListsProps["filter"], string> = {
   archived: "アーカイブ",
 };
 
-async function ArticleLists({ filter }: ArticleListsProps) {
-  const articlesData = await getArticles(filter);
-  const pageTitle = FILTER_TITLES[filter];
+async function ArticleLists({ filter, searchQuery = "" }: ArticleListsProps) {
+  const articlesData = await getArticles(filter, searchQuery);
+  const normalizedQuery = searchQuery.trim();
+  const pageTitle = normalizedQuery
+    ? `検索結果：${normalizedQuery}`
+    : FILTER_TITLES[filter];
 
   if (!articlesData.length) {
     return (
@@ -23,7 +27,11 @@ async function ArticleLists({ filter }: ArticleListsProps) {
           <h2 className="text-5xl font-bold leading-none">{pageTitle}</h2>
         </div>
         <hr />
-        <div className="w-full text-center py-8">記事がまだ登録されていません</div>
+        <div className="w-full text-center py-8">
+          {normalizedQuery
+            ? "検索条件に一致する記事がありません"
+            : "記事がまだ登録されていません"}
+        </div>
       </div>
     );
   }
