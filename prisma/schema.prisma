@@ -19,7 +19,7 @@ model Article {
   description   String?
   siteUpdatedAt String
   thumbnail     String?
-  url           String   @unique
+  url           String
   content       String?  @db.Text
   isLiked       Boolean  @default(false)
   isArchived    Boolean  @default(false)
@@ -28,6 +28,7 @@ model Article {
   userId        String
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, url])
   @@map("articles")
 }
 
