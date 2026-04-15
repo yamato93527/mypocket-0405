@@ -1,7 +1,6 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { checkUrlExists } from "./checkUrlExists";
 import { revalidatePath } from "next/cache";
 
 type ArticleDataProps = {
@@ -21,6 +20,25 @@ type SaveArticleSuccess = Awaited<
 export type SaveArticleResult =
   | { success: true; article: SaveArticleSuccess }
   | { success: false; errorMessage: string };
+
+const MAX_TEXT_LENGTH = 100_000;
+
+function sanitizeText(value: string | null | undefined): string {
+  return (value ?? "").replace(/\u0000/g, "").trim();
+}
+
+function normalizeRequiredText(
+  value: string | null | undefined,
+  fallback = ""
+): string {
+  const normalized = sanitizeText(value);
+  return normalized || fallback;
+}
+
+function normalizeOptionalText(value: string | null | undefined): string | null {
+  const normalized = sanitizeText(value);
+  return normalized || null;
+}
 
 function toSaveError(err: unknown): Error {
   if (process.env.NODE_ENV !== "production") {
@@ -68,7 +86,7 @@ export async function saveArticle(
   articleData: ArticleDataProps,
   userId: string
 ): Promise<SaveArticleResult> {
-  const url = articleData.url.trim();
+  const url = normalizeRequiredText(articleData.url);
   const normalizedUserId = userId.trim();
 
   if (!url || !normalizedUserId) {
@@ -76,9 +94,17 @@ export async function saveArticle(
   }
 
   try {
-    const isDuplicate = await checkUrlExists(url);
+    const existingArticle = await prisma.article.findUnique({
+      where: {
+        userId_url: {
+          url,
+          userId: normalizedUserId,
+        },
+      },
+      select: { id: true },
+    });
 
-    if (isDuplicate) {
+    if (existingArticle) {
       console.log("URLが重複しています");
       return {
         errorMessage: "この記事はすでに登録されています",
@@ -89,13 +115,21 @@ export async function saveArticle(
     const article = await prisma.article.create({
       data: {
         userId: normalizedUserId,
-        title: articleData.title,
-        siteName: articleData.siteName,
-        description: articleData.description,
-        siteUpdatedAt: articleData.siteUpdatedAt,
-        thumbnail: articleData.thumbnail,
+        title: normalizeRequiredText(articleData.title, "タイトルなし"),
+        siteName: normalizeRequiredText(
+          articleData.siteName,
+          new URL(url).hostname
+        ),
+        description: normalizeOptionalText(articleData.description),
+        siteUpdatedAt: normalizeRequiredText(
+          articleData.siteUpdatedAt,
+          new Date().toISOString()
+        ),
+        thumbnail: normalizeOptionalText(articleData.thumbnail),
         url,
-        content: articleData.content,
+        content:
+          normalizeOptionalText(articleData.content)?.slice(0, MAX_TEXT_LENGTH) ??
+          null,
       },
     });
 

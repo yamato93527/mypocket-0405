@@ -11,7 +11,7 @@ function Logo() {
         <div className="relative h-full aspect-square mr-1">
           <Image
             className="object-contain"
-            src="/pocket-icon.png"
+            src="/images/icon.png"
             alt="サイトロゴ"
             fill={true}
             sizes="80px"
