@@ -2,19 +2,57 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 
 function UserIcon() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
-  const userName = session?.user?.name ?? "ユーザー";
   const userEmail = session?.user?.email ?? "";
+  const userName =
+    status === "authenticated"
+      ? (session?.user?.name?.trim() ||
+          userEmail.split("@")[0] ||
+          "ユーザー")
+      : status === "loading"
+        ? "…"
+        : "ユーザー";
+  const userImage = session?.user?.image ?? "/images/userIcon.png";
 
   const handleLogout = async () => {
     setIsMenuOpen(false);
     await signOut({ callbackUrl: "/signin" });
   };
+
+  if (status === "loading") {
+    return (
+      <div className="hidden lg:flex relative h-11/12 aspect-square items-center">
+        <div className="relative h-10 md:h-14 w-10 md:w-14 rounded-full overflow-hidden border-2 border-gray-300 opacity-70">
+          <Image
+            className="object-cover"
+            src="/images/userIcon.png"
+            fill={true}
+            alt="ユーザーアイコン画像"
+            sizes="80px"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (status !== "authenticated" || !session?.user) {
+    return (
+      <div className="hidden lg:flex items-center">
+        <Link
+          href="/signin"
+          className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 transition-colors"
+        >
+          サインイン
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="hidden lg:flex relative h-11/12 aspect-square items-center">
@@ -24,7 +62,7 @@ function UserIcon() {
       >
         <Image
           className="object-cover"
-          src="/images/userIcon.png"
+          src={userImage}
           fill={true}
           alt="ユーザーアイコン画像"
           sizes="80px"

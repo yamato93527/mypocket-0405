@@ -13,10 +13,10 @@ export async function getArticles(
   filter: ArticleFilter = "all",
   searchQuery = ""
 ): Promise<GetArticlesResult> {
-  try {
-    const userId = getCurrentUserId();
-    const normalizedQuery = searchQuery.trim();
+  const userId = await getCurrentUserId();
+  const normalizedQuery = searchQuery.trim();
 
+  try {
     const articles = await prisma.article.findMany({
       where: {
         userId,

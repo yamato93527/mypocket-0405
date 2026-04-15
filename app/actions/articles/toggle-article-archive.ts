@@ -12,7 +12,7 @@ export async function toggleArticleArchive(
   articleId: string,
   isArchived: boolean
 ): Promise<ToggleArticleArchiveResult> {
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
 
   try {
     const updated = await prisma.article.updateMany({

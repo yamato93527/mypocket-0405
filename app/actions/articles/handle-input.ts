@@ -23,7 +23,7 @@ export async function handleArticleInput(
     };
   }
 
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
 
   try {
     const result = await saveArticle(

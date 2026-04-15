@@ -18,26 +18,9 @@ type SaveArticleSuccess = Awaited<
   ReturnType<(typeof prisma.article)["create"]>
 >;
 
-const TEMP_USER_ID = "temp-user-123";
-
 export type SaveArticleResult =
   | { success: true; article: SaveArticleSuccess }
   | { success: false; errorMessage: string };
-
-async function ensureUserExists(userId: string) {
-  if (userId !== TEMP_USER_ID) {
-    return;
-  }
-
-  await prisma.user.upsert({
-    where: { id: userId },
-    update: {},
-    create: {
-      id: userId,
-      name: "Temporary User",
-    },
-  });
-}
 
 function toSaveError(err: unknown): Error {
   if (process.env.NODE_ENV !== "production") {
@@ -93,8 +76,6 @@ export async function saveArticle(
   }
 
   try {
-    await ensureUserExists(normalizedUserId);
-
     const isDuplicate = await checkUrlExists(url);
 
     if (isDuplicate) {

@@ -12,7 +12,7 @@ export async function toggleArticleLike(
   articleId: string,
   isLiked: boolean
 ): Promise<ToggleArticleLikeResult> {
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
 
   try {
     const updated = await prisma.article.updateMany({

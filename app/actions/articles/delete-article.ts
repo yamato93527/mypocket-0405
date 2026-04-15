@@ -11,7 +11,7 @@ type DeleteArticleResult =
 export async function deleteArticle(
   articleId: string
 ): Promise<DeleteArticleResult> {
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
 
   try {
     const deleted = await prisma.article.deleteMany({
