@@ -13,15 +13,17 @@ export function getExtensionCorsHeaders(
   methods: string
 ): HeadersInit {
   const origin = request.headers.get("origin");
-  const isAllowedOrigin = origin
+  const allowedOrigin = origin
     ? allowedOriginPatterns.some((pattern) => pattern.test(origin))
-    : false;
+      ? origin
+      : null
+    : null;
 
   return {
-    ...(isAllowedOrigin
+    ...(allowedOrigin
       ? {
           "Access-Control-Allow-Credentials": "true",
-          "Access-Control-Allow-Origin": origin,
+          "Access-Control-Allow-Origin": allowedOrigin,
           Vary: "Origin",
         }
       : {
