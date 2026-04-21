@@ -3,6 +3,16 @@ import { type NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import prisma from "./lib/prisma";
 
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+const authSecret = process.env.AUTH_SECRET;
+
+if (!googleClientId || !googleClientSecret || !authSecret) {
+  throw new Error(
+    "Missing auth env vars. Set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and AUTH_SECRET.",
+  );
+}
+
 const allowedGoogleEmails = (process.env.ALLOWED_GOOGLE_EMAILS ?? "")
   .split(",")
   .map((email) => email.trim().toLowerCase())
@@ -12,8 +22,8 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
       authorization: {
         params: {
           prompt: "select_account",
@@ -25,7 +35,7 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/signin",
   },
-  secret: process.env.AUTH_SECRET,
+  secret: authSecret,
   session: {
     strategy: "database",
   },
@@ -37,15 +47,19 @@ export const authOptions: NextAuthOptions = {
 
       const email = user.email?.trim().toLowerCase();
       if (!email) {
-        return false;
+        return "/signin?error=AccessDenied";
       }
 
       // 許可メール未設定時は誤って全員ログインさせないため拒否
       if (allowedGoogleEmails.length === 0) {
-        return false;
+        return "/signin?error=AccessDenied";
       }
 
-      return allowedGoogleEmails.includes(email);
+      if (!allowedGoogleEmails.includes(email)) {
+        return "/signin?error=AccessDenied";
+      }
+
+      return true;
     },
     async session({ session, user }) {
       if (session.user) {

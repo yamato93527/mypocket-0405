@@ -17,6 +17,10 @@ export default function SignInForm() {
   const errorMessage =
     error === "OAuthAccountNotLinked"
       ? "同じメールアドレスで別のログイン方法が登録されています。Googleアカウントで再度お試しください。"
+      : error === "AccessDenied"
+        ? "このGoogleアカウントは現在ログイン許可されていません。管理者に連絡して許可メールに追加してください。"
+        : error === "Callback"
+          ? "ログイン処理に失敗しました。管理者がGoogle認証の設定値を確認してください。"
       : null;
 
   useEffect(() => {
