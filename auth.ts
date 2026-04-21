@@ -39,6 +39,14 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "database",
   },
+  logger: {
+    error(code, metadata) {
+      console.error("[next-auth][error]", code, metadata);
+    },
+    warn(code) {
+      console.warn("[next-auth][warn]", code);
+    },
+  },
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider !== "google") {
