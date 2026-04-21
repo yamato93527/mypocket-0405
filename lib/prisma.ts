@@ -13,8 +13,7 @@ if (!process.env.DATABASE_URL) {
 const connectionString = process.env.DATABASE_URL;
 const connectionUrl = new URL(connectionString);
 const sslMode = connectionUrl.searchParams.get("sslmode");
-const allowSelfSignedTls =
-  process.env.NODE_ENV !== "production" && sslMode === "require";
+const allowSelfSignedTls = sslMode === "require";
 const effectiveConnectionString = allowSelfSignedTls
   ? (() => {
       connectionUrl.searchParams.set("sslmode", "no-verify");
